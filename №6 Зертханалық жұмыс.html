@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>№6 Зертханалық жұмыс: Экологиялық пирамидалар симуляциясы</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0fdf4;
+        }
+        .pyramid-level {
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .pyramid-level:hover {
+            transform: scale(1.03);
+            filter: brightness(1.08);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #0d9488;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-teal-700 to-emerald-700 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div class="flex items-center gap-3">
+                <div class="bg-white/20 p-2.5 rounded-xl backdrop-blur-sm">
+                    <svg class="w-7 h-7 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-emerald-200 block">Виртуалды зертхана • Биология</span>
+                    <h1 class="text-lg sm:text-xl font-bold leading-tight">№6 Зертханалық жұмыс: Экологиялық пирамидалар</h1>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="switchTab('lab')" id="tab-lab" class="px-4 py-2 rounded-lg text-sm font-semibold bg-white text-teal-800 shadow transition">
+                    🔬 Зертхана (Симуляция)
+                </button>
+                <button onclick="switchTab('quiz')" id="tab-quiz" class="px-4 py-2 rounded-lg text-sm font-semibold bg-teal-800/60 text-white hover:bg-teal-800 transition">
+                    📝 Өзін-өзі тексеру
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 sm:px-6 lg:px-8">
+        
+        <!-- LAB SIMULATION VIEW -->
+        <div id="view-lab" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Left Control Panel -->
+            <div class="lg:col-span-4 space-y-5">
+                
+                <!-- Ecosystem Selection -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-emerald-100">
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-teal-700 mb-3 flex items-center gap-2">
+                        <span>🌍</span> 1. Экожүйені таңдаңыз
+                    </h2>
+                    <div class="grid grid-cols-1 gap-2.5">
+                        <button onclick="setEcosystem('steppe')" id="btn-steppe" class="eco-btn flex items-center justify-between p-3 rounded-xl border-2 border-teal-600 bg-teal-50/70 text-left transition">
+                            <div>
+                                <div class="font-bold text-slate-800">🌾 Дала экожүйесі</div>
+                                <div class="text-xs text-slate-500">Шөп → Қоян → Қасқыр → Бүркіт</div>
+                            </div>
+                            <span class="text-xs font-semibold px-2 py-1 bg-teal-100 text-teal-800 rounded-md">Қалыпты</span>
+                        </button>
+
+                        <button onclick="setEcosystem('forest')" id="btn-forest" class="eco-btn flex items-center justify-between p-3 rounded-xl border-2 border-slate-200 hover:border-teal-300 text-left transition">
+                            <div>
+                                <div class="font-bold text-slate-800">🌲 Орман экожүйесі</div>
+                                <div class="text-xs text-slate-500">Емен → Жұлдызқұрт → Шымшық → Қырғи</div>
+                            </div>
+                            <span class="text-xs font-semibold px-2 py-1 bg-amber-100 text-amber-800 rounded-md">Ерекше сандар</span>
+                        </button>
+
+                        <button onclick="setEcosystem('ocean')" id="btn-ocean" class="eco-btn flex items-center justify-between p-3 rounded-xl border-2 border-slate-200 hover:border-teal-300 text-left transition">
+                            <div>
+                                <div class="font-bold text-slate-800">🌊 Мұхит экожүйесі</div>
+                                <div class="text-xs text-slate-500">Фитопланктон → Зоопланктон → Балық → Акула</div>
+                            </div>
+                            <span class="text-xs font-semibold px-2 py-1 bg-blue-100 text-blue-800 rounded-md">Төңкерілген биомасса</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pyramid Type Selection -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-emerald-100">
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-teal-700 mb-3 flex items-center gap-2">
+                        <span>📊</span> 2. Пирамида түрін таңдаңыз
+                    </h2>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="setPyramidType('energy')" id="type-energy" class="type-btn py-2.5 px-2 rounded-xl font-semibold text-xs sm:text-sm bg-teal-600 text-white shadow-sm transition text-center">
+                            ⚡ Энергия<br><span class="text-[10px] font-normal opacity-90">(кДж)</span>
+                        </button>
+                        <button onclick="setPyramidType('biomass')" id="type-biomass" class="type-btn py-2.5 px-2 rounded-xl font-semibold text-xs sm:text-sm bg-slate-100 text-slate-700 hover:bg-slate-200 transition text-center">
+                            ⚖️ Биомасса<br><span class="text-[10px] font-normal opacity-75">(кг/га)</span>
+                        </button>
+                        <button onclick="setPyramidType('numbers')" id="type-numbers" class="type-btn py-2.5 px-2 rounded-xl font-semibold text-xs sm:text-sm bg-slate-100 text-slate-700 hover:bg-slate-200 transition text-center">
+                            🔢 Сандар<br><span class="text-[10px] font-normal opacity-75">(дарақ саны)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Base Energy / Producer Control -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-emerald-100">
+                    <div class="flex justify-between items-center mb-2">
+                        <h2 class="text-sm font-bold uppercase tracking-wider text-teal-700 flex items-center gap-2">
+                            <span>☀️</span> 3. Бастапқы энергия қоры
+                        </h2>
+                        <span id="base-energy-label" class="text-sm font-extrabold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+                            10 000 кДж
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-500 mb-3">Продуценттер жинақтаған энергия мөлшерін өзгертіп, Линдеманның <b>10% ережесін</b> бақылаңыз:</p>
+                    <input type="range" id="energy-slider" min="1000" max="100000" step="1000" value="10000" oninput="updateSimulation()" class="w-full accent-teal-600 cursor-pointer h-2 bg-slate-200 rounded-lg">
+                    <div class="flex justify-between text-[11px] text-slate-400 mt-1 font-medium">
+                        <span>1 000 кДж</span>
+                        <span>50 000 кДж</span>
+                        <span>100 000 кДж</span>
+                    </div>
+                </div>
+
+                <!-- Scientific Explanation Box -->
+                <div id="info-card" class="bg-gradient-to-br from-teal-800 to-slate-800 text-white p-5 rounded-2xl shadow-md">
+                    <div class="flex items-center gap-2 text-emerald-300 font-bold text-sm mb-1.5">
+                        <span>💡</span> <span id="info-title">Энергия пирамидасы заңдылығы</span>
+                    </div>
+                    <p id="info-text" class="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                        Линдеман ережесі бойынша әрбір келесі трофикалық деңгейге алдыңғы деңгейдегі энергияның тек <b>10%-ы</b> ғана өтеді. Қалған 90%-ы тыныс алуға, қозғалысқа және жылу ретінде қоршаған ортаға таралады. Сондықтан энергия пирамидасы <b>ешқашан төңкерілмейді</b>.
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Right Interactive Pyramid Visualization -->
+            <div class="lg:col-span-8 flex flex-col gap-5">
+                
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-100 flex-grow flex flex-col justify-between">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+                        <div>
+                            <h3 id="viz-heading" class="text-lg font-extrabold text-slate-800">Дала экожүйесі: Энергия пирамидасы</h3>
+                            <p class="text-xs text-slate-500">Деңгейлердің үстіне басып, толық сипаттамасын көріңіз</p>
+                        </div>
+                        <span id="shape-badge" class="self-start sm:self-auto px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
+                            ▲ Қалыпты пирамида пішіні
+                        </span>
+                    </div>
+
+                    <!-- Pyramid Canvas Container -->
+                    <div class="my-6 flex flex-col items-center justify-center space-y-2.5 py-4 px-2 bg-slate-50/70 rounded-2xl border border-dashed border-slate-200 relative min-h-[340px]" id="pyramid-container">
+                        <!-- Levels will be dynamically injected here -->
+                    </div>
+
+                    <!-- Selected Level Detail Bar -->
+                    <div id="level-detail" class="bg-teal-50/80 border border-teal-200 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <span id="detail-emoji" class="text-3xl bg-white p-2 rounded-xl shadow-sm">🌾</span>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span id="detail-level" class="text-xs font-bold uppercase px-2 py-0.5 rounded bg-teal-600 text-white">1-деңгей</span>
+                                    <h4 id="detail-name" class="font-bold text-slate-800 text-sm sm:text-base">Продуценттер (Шөптесін өсімдіктер)</h4>
+                                </div>
+                                <p id="detail-desc" class="text-xs text-slate-600 mt-0.5">Күн энергиясын фотосинтез арқылы органикалық заттарға айналдыратын өндірушілер.</p>
+                            </div>
+                        </div>
+                        <div class="text-right self-end sm:self-center bg-white px-3 py-2 rounded-lg border border-teal-100 shadow-sm shrink-0">
+                            <div class="text-[10px] text-slate-400 uppercase font-bold">Көрсеткіш мәні</div>
+                            <div id="detail-value" class="text-base font-extrabold text-teal-700">10 000 кДж</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Table Summary -->
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-emerald-100 overflow-x-auto">
+                    <h3 class="text-sm font-bold text-slate-700 mb-3">📋 Зертханалық бақылау кестесі (Автоматты есептеу)</h3>
+                    <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-600 border-b border-slate-200">
+                                <th class="py-2.5 px-3 rounded-tl-lg">Трофикалық деңгей</th>
+                                <th class="py-2.5 px-3">Ағза мысалы</th>
+                                <th class="py-2.5 px-3">Энергия (кДж)</th>
+                                <th class="py-2.5 px-3">Биомасса (кг/га)</th>
+                                <th class="py-2.5 px-3 rounded-tr-lg">Дарақ саны</th>
+                            </tr>
+                        </thead>
+                        <tbody id="summary-table-body" class="divide-y divide-slate-100">
+                            <!-- Rows injected dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- QUIZ / SELF-CHECK VIEW -->
+        <div id="view-quiz" class="hidden max-w-3xl mx-auto">
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-emerald-100">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4 mb-6">
+                    <div>
+                        <h2 class="text-xl font-extrabold text-slate-800">📝 Зертханалық жұмысты бекіту тесті</h2>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1">Симуляция нәтижелеріне сүйене отырып, сұрақтарға жауап беріңіз</p>
+                    </div>
+                    <span id="quiz-score-badge" class="hidden px-3.5 py-1.5 rounded-xl font-bold text-sm bg-emerald-100 text-emerald-800">
+                        Нәтиже: 0 / 4
+                    </span>
+                </div>
+
+                <div id="quiz-container" class="space-y-6">
+                    <!-- Questions injected dynamically -->
+                </div>
+
+                <div class="mt-8 pt-4 border-t border-slate-100 flex justify-between items-center">
+                    <button onclick="resetQuiz()" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 transition">
+                        🔄 Қайта бастау
+                    </button>
+                    <button onclick="checkQuiz()" class="px-6 py-2.5 rounded-xl text-sm font-bold bg-teal-600 text-white hover:bg-teal-700 shadow-md transition">
+                        ✅ Жауаптарды тексеру
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+        Биология • №6 Зертханалық жұмыс: «Экологиялық пирамидаларды зерттеу» интерактивті симуляторы
+    </footer>
+
+    <script>
+        // Ecosystem Datasets
+        const ecosystems = {
+            steppe: {
+                name: "Дала экожүйесі",
+                levels: [
+                    {
+                        level: "4-деңгей (III реттік консумент)",
+                        organism: "Бүркіт",
+                        emoji: "🦅",
+                        desc: "Қоректік тізбектің ең жоғарғы сатысындағы жыртқыш құс.",
+                        biomassRatio: 0.001, // relative to base energy 10000 -> 1 kg
+                        numberRatio: 0.0002, // 2 eagles
+                        color: "from-cyan-500 to-teal-500"
+                    },
+                    {
+                        level: "3-деңгей (II реттік консумент)",
+                        organism: "Қасқыр",
+                        emoji: "🐺",
+                        desc: "Өсімдікқоректі жануарлармен қоректенетін етқоректі жыртқыш.",
+                        biomassRatio: 0.01, // 10 kg
+                        numberRatio: 0.002, // 20 wolves
+                        color: "from-teal-500 to-emerald-600"
+                    },
+                    {
+                        level: "2-деңгей (I реттік консумент)",
+                        organism: "Қоян",
+                        emoji: "🐇",
+                        desc: "Өсімдіктермен тікелей қоректенетін шөпқоректі жануар.",
+                        biomassRatio: 0.1, // 100 kg
+                        numberRatio: 0.05, // 500 rabbits
+                        color: "from-emerald-600 to-green-600"
+                    },
+                    {
+                        level: "1-деңгей (Продуцент)",
+                        organism: "Дала шөптері",
+                        emoji: "🌾",
+                        desc: "Күн энергиясын фотосинтез арқылы органикалық заттарға айналдыратын өндірушілер.",
+                        biomassRatio: 1.0, // 1000 kg
+                        numberRatio: 10, // 100 000 plants
+                        color: "from-green-700 to-emerald-800"
+                    }
+                ],
+                explanations: {
+                    energy: {
+                        title: "Дала экожүйесі: Энергия пирамидасы",
+                        text: "Линдеманның 10% ережесі бойынша шөптерден қоянға 10%, қояннан қасқырға 10%, қасқырдан бүркітке 10% энергия өтеді. Сондықтан пирамида табанынан төбесіне қарай күрт кішірейеді."
+                    },
+                    biomass: {
+                        title: "Дала экожүйесі: Биомасса пирамидасы",
+                        text: "Құрлық экожүйелерінде өсімдіктердің (продуценттердің) жалпы құрғақ салмағы жануарлардың салмағынан әлдеқайда көп болады. Бұл — <b>қалыпты (тік) пирамида</b>."
+                    },
+                    numbers: {
+                        title: "Дала экожүйесі: Сандар пирамидасы",
+                        text: "Бір қоянды асырау үшін жүздеген шөп қажет, ал бір бүркітке бірнеше қоян мен қасқыр керек. Дарақтар саны жоғарылаған сайын азаяды."
+                    }
+                }
+            },
+            forest: {
+                name: "Орман экожүйесі",
+                levels: [
+                    {
+                        level: "4-деңгей (III реттік консумент)",
+                        organism: "Қырғи",
+                        emoji: "🦅",
+                        desc: "Ұсақ орман құстарын аулайтын жыртқыш құс.",
+                        biomassRatio: 0.001,
+                        numberRatio: 0.0005, // 5 hawks
+                        color: "from-cyan-500 to-teal-500"
+                    },
+                    {
+                        level: "3-деңгей (II реттік консумент)",
+                        organism: "Шымшық",
+                        emoji: "🐦",
+                        desc: "Жәндіктермен және жұлдызқұрттармен қоректенетін құс.",
+                        biomassRatio: 0.01,
+                        numberRatio: 0.01, // 100 birds
+                        color: "from-teal-500 to-emerald-600"
+                    },
+                    {
+                        level: "2-деңгей (I реттік консумент)",
+                        organism: "Жұлдызқұрт",
+                        emoji: "🐛",
+                        desc: "Ағаш жапырақтарымен қоректенетін өсімдікқоректі дернәсілдер.",
+                        biomassRatio: 0.1,
+                        numberRatio: 1.5, // 15 000 caterpillars! (More than trees!)
+                        color: "from-emerald-600 to-green-600"
+                    },
+                    {
+                        level: "1-деңгей (Продуцент)",
+                        organism: "Емен ағашы",
+                        emoji: "🌳",
+                        desc: "Ірі діңді, көпжылдық фотосинтездеуші ағаштар.",
+                        biomassRatio: 1.2,
+                        numberRatio: 0.002, // Only 20 big oak trees!
+                        color: "from-green-700 to-emerald-800"
+                    }
+                ],
+                explanations: {
+                    energy: {
+                        title: "Орман экожүйесі: Энергия пирамидасы",
+                        text: "Ағаш саны аз болғанымен, олар өндіретін жалпы энергия қоры өте үлкен. Энергия тасымалы қатаң түрде 10% ережесіне бағынады."
+                    },
+                    biomass: {
+                        title: "Орман экожүйесі: Биомасса пирамидасы",
+                        text: "Емен ағаштарының сүрегі мен жапырақтарының салмағы өте үлкен болғандықтан, биомасса пирамидасы қалыпты тік пішінде сақталады."
+                    },
+                    numbers: {
+                        title: "Ерекшелік! Ормандағы сандар пирамидасы",
+                        text: "Назар аударыңыз! Бір ғана ірі емен ағашында мыңдаған жұлдызқұрт тіршілік ете алады. Сондықтан 1-деңгейдің (ағаш) саны 2-деңгейден (жұлдызқұрт) аз болып, <b>пирамида табаны тарылады</b>!"
+                    }
+                }
+            },
+            ocean: {
+                name: "Мұхит экожүйесі",
+                levels: [
+                    {
+                        level: "4-деңгей (III реттік консумент)",
+                        organism: "Акула",
+                        emoji: "🦈",
+                        desc: "Мұхит экожүйесінің ірі жыртқыш балығы.",
+                        biomassRatio: 0.4, // High biomass top predator!
+                        numberRatio: 0.0002,
+                        color: "from-blue-600 to-indigo-600"
+                    },
+                    {
+                        level: "3-деңгей (II реттік консумент)",
+                        organism: "Майшабақ (Балық)",
+                        emoji: "🐟",
+                        desc: "Зоопланктонмен қоректенетін орташа балықтар.",
+                        biomassRatio: 0.25,
+                        numberRatio: 0.02,
+                        color: "from-sky-500 to-blue-600"
+                    },
+                    {
+                        level: "2-деңгей (I реттік консумент)",
+                        organism: "Зоопланктон",
+                        emoji: "🦐",
+                        desc: "Фитопланктонмен қоректенетін ұсақ шаянтәрізділер.",
+                        biomassRatio: 0.15,
+                        numberRatio: 5,
+                        color: "from-teal-500 to-cyan-600"
+                    },
+                    {
+                        level: "1-деңгей (Продуцент)",
+                        organism: "Фитопланктон",
+                        emoji: "🦠",
+                        desc: "Су қабатындағы микроскопиялық балдырлар (өте тез көбейеді).",
+                        biomassRatio: 0.05, // Lowest standing biomass!
+                        numberRatio: 500,
+                        color: "from-emerald-600 to-teal-700"
+                    }
+                ],
+                explanations: {
+                    energy: {
+                        title: "Мұхит экожүйесі: Энергия пирамидасы",
+                        text: "Биомассасы аз болса да, фитопланктон өте жылдам көбейіп, орасан зор энергия өндіреді. Энергия пирамидасы мұхитта да қалыпты пішінде болады."
+                    },
+                    biomass: {
+                        title: "Төңкерілген биомасса пирамидасы!",
+                        text: "Су экожүйесінде продуценттер (фитопланктон) өте ұсақ және оларды зоопланктон тез жеп қояды. Сондықтан кез келген уақыт мезетінде балықтар мен акулалардың салмағы фитопланктоннан көп болып, <b>төңкерілген пирамида</b> түзіледі!"
+                    },
+                    numbers: {
+                        title: "Мұхит экожүйесі: Сандар пирамидасы",
+                        text: "Микроскопиялық фитопланктон дарақтарының саны миллиардтап саналады, ал акулалар саны өте аз. Пирамида қалыпты пішінде."
+                    }
+                }
+            }
+        };
+
+        // Current State
+        let currentEco = 'steppe';
+        let currentType = 'energy';
+        let baseEnergy = 10000;
+        let selectedLevelIndex = 3; // Bottom level by default
+
+        // Format number with spaces
+        function formatNum(num) {
+            if (num >= 1000000) return (num / 1000000).toFixed(1).replace('.0', '') + ' млн';
+            if (num < 1 && num > 0) return num.toFixed(2);
+            return Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        }
+
+        // Calculate values for all 4 levels (index 0 = top level 4, index 3 = bottom level 1)
+        function calculateMetrics() {
+            const eco = ecosystems[currentEco];
+            return eco.levels.map((lvl, idx) => {
+                // idx: 3 -> level 1 (100%), 2 -> level 2 (10%), 1 -> level 3 (1%), 0 -> level 4 (0.1%)
+                const power = 3 - idx;
+                const energy = baseEnergy * Math.pow(0.1, power);
+                const biomass = baseEnergy * lvl.biomassRatio;
+                const numbers = Math.max(1, Math.round(baseEnergy * lvl.numberRatio));
+                return {
+                    ...lvl,
+                    energy,
+                    biomass,
+                    numbers
+                };
+            });
+        }
+
+        function setEcosystem(ecoKey) {
+            currentEco = ecoKey;
+            document.querySelectorAll('.eco-btn').forEach(btn => {
+                btn.classList.remove('border-teal-600', 'bg-teal-50/70');
+                btn.classList.add('border-slate-200');
+            });
+            const activeBtn = document.getElementById(`btn-${ecoKey}`);
+            activeBtn.classList.remove('border-slate-200');
+            activeBtn.classList.add('border-teal-600', 'bg-teal-50/70');
+            updateSimulation();
+        }
+
+        function setPyramidType(typeKey) {
+            currentType = typeKey;
+            document.querySelectorAll('.type-btn').forEach(btn => {
+                btn.classList.remove('bg-teal-600', 'text-white', 'shadow-sm');
+                btn.classList.add('bg-slate-100', 'text-slate-700');
+            });
+            const activeBtn = document.getElementById(`type-${typeKey}`);
+            activeBtn.classList.remove('bg-slate-100', 'text-slate-700');
+            activeBtn.classList.add('bg-teal-600', 'text-white', 'shadow-sm');
+            updateSimulation();
+        }
+
+        function selectLevel(idx) {
+            selectedLevelIndex = idx;
+            updateSimulation();
+        }
+
+        function updateSimulation() {
+            baseEnergy = parseInt(document.getElementById('energy-slider').value);
+            document.getElementById('base-energy-label').textContent = formatNum(baseEnergy) + ' кДж';
+
+            const eco = ecosystems[currentEco];
+            const data = calculateMetrics();
+
+            // Update Heading & Explanation
+            const typeNames = {
+                energy: 'Энергия пирамидасы',
+                biomass: 'Биомасса пирамидасы',
+                numbers: 'Сандар пирамидасы'
+            };
+            document.getElementById('viz-heading').textContent = `${eco.name}: ${typeNames[currentType]}`;
+            document.getElementById('info-title').textContent = eco.explanations[currentType].title;
+            document.getElementById('info-text').innerHTML = eco.explanations[currentType].text;
+
+            // Shape Badge
+            const shapeBadge = document.getElementById('shape-badge');
+            if (currentEco === 'ocean' && currentType === 'biomass') {
+                shapeBadge.textContent = '▼ Төңкерілген пирамида пішіні';
+                shapeBadge.className = 'self-start sm:self-auto px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800';
+            } else if (currentEco === 'forest' && currentType === 'numbers') {
+                shapeBadge.textContent = '♦ Табаны тарылған ерекше пішін';
+                shapeBadge.className = 'self-start sm:self-auto px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-800';
+            } else {
+                shapeBadge.textContent = '▲ Қалыпты (тік) пирамида пішіні';
+                shapeBadge.className = 'self-start sm:self-auto px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800';
+            }
+
+            // Calculate visual widths (percentages between 24% and 96%)
+            let widths = [];
+            if (currentType === 'energy') {
+                widths = [26, 46, 68, 94];
+            } else if (currentType === 'biomass') {
+                if (currentEco === 'ocean') {
+                    // Inverted pyramid!
+                    widths = [94, 70, 48, 28];
+                } else {
+                    widths = [26, 46, 68, 94];
+                }
+            } else if (currentType === 'numbers') {
+                if (currentEco === 'forest') {
+                    // Narrow base (trees), wide 2nd level (caterpillars)
+                    widths = [26, 46, 94, 34];
+                } else {
+                    widths = [26, 46, 68, 94];
+                }
+            }
+
+            // Render Pyramid Levels
+            const container = document.getElementById('pyramid-container');
+            container.innerHTML = '';
+
+            data.forEach((item, idx) => {
+                let displayVal = '';
+                if (currentType === 'energy') displayVal = `${formatNum(item.energy)} кДж`;
+                if (currentType === 'biomass') displayVal = `${formatNum(item.biomass)} кг/га`;
+                if (currentType === 'numbers') displayVal = `${formatNum(item.numbers)} дарақ`;
+
+                const isSelected = idx === selectedLevelIndex;
+                const ringClass = isSelected ? 'ring-4 ring-amber-400 shadow-lg' : 'shadow-sm';
+
+                const bar = document.createElement('div');
+                bar.onclick = () => selectLevel(idx);
+                bar.style.width = `${widths[idx]}%`;
+                bar.className = `pyramid-level cursor-pointer bg-gradient-to-r ${item.color} text-white rounded-xl py-3 px-3 sm:px-5 flex items-center justify-between gap-2 ${ringClass}`;
+
+                bar.innerHTML = `
+                    <div class="flex items-center gap-2 min-w-0">
+                        <span class="text-lg sm:text-xl shrink-0">${item.emoji}</span>
+                        <div class="truncate">
+                            <div class="text-xs sm:text-sm font-bold truncate">${item.organism}</div>
+                            <div class="text-[10px] text-white/80 hidden sm:block truncate">${item.level}</div>
+                        </div>
+                    </div>
+                    <div class="text-xs sm:text-sm font-extrabold bg-black/20 px-2.5 py-1 rounded-lg shrink-0">
+                        ${displayVal}
+                    </div>
+                `;
+                container.appendChild(bar);
+            });
+
+            // Update Selected Level Detail Card
+            const activeItem = data[selectedLevelIndex];
+            document.getElementById('detail-emoji').textContent = activeItem.emoji;
+            document.getElementById('detail-level').textContent = activeItem.level;
+            document.getElementById('detail-name').textContent = activeItem.organism;
+            document.getElementById('detail-desc').textContent = activeItem.desc;
+
+            let activeValStr = '';
+            if (currentType === 'energy') activeValStr = `${formatNum(activeItem.energy)} кДж`;
+            if (currentType === 'biomass') activeValStr = `${formatNum(activeItem.biomass)} кг/га`;
+            if (currentType === 'numbers') activeValStr = `${formatNum(activeItem.numbers)} дарақ`;
+            document.getElementById('detail-value').textContent = activeValStr;
+
+            // Update Summary Table
+            const tbody = document.getElementById('summary-table-body');
+            tbody.innerHTML = '';
+            data.forEach((item, idx) => {
+                const row = document.createElement('tr');
+                row.className = idx === selectedLevelIndex ? 'bg-teal-50/70 font-medium' : 'hover:bg-slate-50';
+                row.innerHTML = `
+                    <td class="py-2.5 px-3 text-slate-700 font-semibold">${item.level}</td>
+                    <td class="py-2.5 px-3">${item.emoji} ${item.organism}</td>
+                    <td class="py-2.5 px-3 font-bold text-emerald-700">${formatNum(item.energy)} кДж</td>
+                    <td class="py-2.5 px-3 text-slate-700">${formatNum(item.biomass)} кг/га</td>
+                    <td class="py-2.5 px-3 text-slate-700">${formatNum(item.numbers)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Quiz Questions
+        const quizQuestions = [
+            {
+                q: "1. Егер продуценттерде (шөпте) 25 000 кДж энергия болса, 3-ші трофикалық деңгейдегі ағзаға (қасқырға) қанша энергия жетеді?",
+                options: ["2 500 кДж", "250 кДж", "25 кДж", "25 000 кДж"],
+                correct: 1,
+                explanation: "10% ережесі бойынша: 1-деңгей (25 000 кДж) → 2-деңгей (2 500 кДж) → 3-деңгей (250 кДж)."
+            },
+            {
+                q: "2. Қай экологиялық пирамида ЕШҚАШАН төңкерілген пішінде болмайды?",
+                options: ["Сандар пирамидасы", "Биомасса пирамидасы", "Энергия пирамидасы", "Барлығы төңкеріле алады"],
+                correct: 2,
+                explanation: "Термодинамика заңдары мен 10% ережесіне сәйкес энергия әр деңгейде жылу ретінде жұмсалатындықтан, энергия пирамидасы әрқашан табанынан төбесіне қарай тарылады."
+            },
+            {
+                q: "3. Мұхит экожүйесінде биомасса пирамидасының төңкерілген болу себебі неде?",
+                options: [
+                    "Акулалар күн сәулесінен энергия алады",
+                    "Фитопланктон өте ұсақ, тез көбейеді және оны зоопланктон жылдам жеп отырады",
+                    "Мұхитта энергия 100% сақталады",
+                    "Балықтар өсімдіктермен қоректенбейді"
+                ],
+                correct: 1,
+                explanation: "Фитопланктонның өмір сүру ұзақтығы қысқа, бірақ көбею жылдамдығы өте жоғары болғандықтан, белгілі бір уақыттағы олардың жиынтық массасы консументтерден аз болады."
+            },
+            {
+                q: "4. Орман экожүйесінде (Емен → Жұлдызқұрт → Шымшық) қай пирамиданың табаны 2-деңгейден тар болады?",
+                options: ["Сандар пирамидасы", "Энергия пирамидасы", "Биомасса пирамидасы", "Ешқайсысы"],
+                correct: 0,
+                explanation: "Бір ғана ірі емен ағашында (1-деңгей) мыңдаған жұлдызқұрт (2-деңгей) қоректенетіндіктен, дарақтар саны бойынша 1-деңгей кіші болады."
+            }
+        ];
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+            quizQuestions.forEach((item, qIdx) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'p-4 rounded-xl border border-slate-200 bg-slate-50/50';
+                qDiv.innerHTML = `
+                    <p class="font-bold text-slate-800 text-sm sm:text-base mb-3">${item.q}</p>
+                    <div class="space-y-2">
+                        ${item.options.map((opt, oIdx) => `
+                            <label class="flex items-center gap-3 p-2.5 rounded-lg bg-white border border-slate-200 hover:border-teal-400 cursor-pointer transition">
+                                <input type="radio" name="q${qIdx}" value="${oIdx}" class="accent-teal-600 w-4 h-4">
+                                <span class="text-xs sm:text-sm text-slate-700">${opt}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                    <div id="feedback-${qIdx}" class="hidden mt-3 text-xs p-2.5 rounded-lg"></div>
+                `;
+                container.appendChild(qDiv);
+            });
+        }
+
+        function checkQuiz() {
+            let score = 0;
+            quizQuestions.forEach((item, qIdx) => {
+                const selected = document.querySelector(`input[name="q${qIdx}"]:checked`);
+                const fb = document.getElementById(`feedback-${qIdx}`);
+                fb.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-800', 'bg-rose-100', 'text-rose-800');
+                
+                if (selected && parseInt(selected.value) === item.correct) {
+                    score++;
+                    fb.classList.add('bg-emerald-100', 'text-emerald-800');
+                    fb.innerHTML = `✅ <b>Дұрыс!</b> ${item.explanation}`;
+                } else {
+                    fb.classList.add('bg-rose-100', 'text-rose-800');
+                    fb.innerHTML = `❌ <b>Қате.</b> ${item.explanation}`;
+                }
+            });
+
+            const badge = document.getElementById('quiz-score-badge');
+            badge.textContent = `Нәтиже: ${score} / ${quizQuestions.length}`;
+            badge.classList.remove('hidden');
+        }
+
+        function resetQuiz() {
+            document.getElementById('quiz-score-badge').classList.add('hidden');
+            renderQuiz();
+        }
+
+        function switchTab(tab) {
+            const labView = document.getElementById('view-lab');
+            const quizView = document.getElementById('view-quiz');
+            const tabLab = document.getElementById('tab-lab');
+            const tabQuiz = document.getElementById('tab-quiz');
+
+            if (tab === 'lab') {
+                labView.classList.remove('hidden');
+                quizView.classList.add('hidden');
+                tabLab.className = 'px-4 py-2 rounded-lg text-sm font-semibold bg-white text-teal-800 shadow transition';
+                tabQuiz.className = 'px-4 py-2 rounded-lg text-sm font-semibold bg-teal-800/60 text-white hover:bg-teal-800 transition';
+            } else {
+                labView.classList.add('hidden');
+                quizView.classList.remove('hidden');
+                tabQuiz.className = 'px-4 py-2 rounded-lg text-sm font-semibold bg-white text-teal-800 shadow transition';
+                tabLab.className = 'px-4 py-2 rounded-lg text-sm font-semibold bg-teal-800/60 text-white hover:bg-teal-800 transition';
+            }
+        }
+
+        // Initialize on load
+        window.onload = function() {
+            updateSimulation();
+            renderQuiz();
+        };
+    </script>
+</body>
+</html>
